@@ -64,7 +64,6 @@ all_target_sample_weight_given_a_MCMC_sample = function(low_mu0, high_mu0, low_l
 ######################################################################################################
 # Example
 L = c(length(mu_interval),length(tau_interval))
-#L = c(141,33)
 target_ESS = 5000
 
 
