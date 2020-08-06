@@ -1,5 +1,9 @@
-
 setwd("")
+
+install.packages("extrafontdb")
+library(extrafont)
+font_import()
+loadfonts()
 
 library(rstan)
 library(readxl)

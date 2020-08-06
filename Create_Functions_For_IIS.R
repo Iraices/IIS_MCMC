@@ -120,7 +120,7 @@ stan_meta_analysis = stan_model(file = "Meta_analysis_RE.stan")
     ## The penalty term is set to be larger than the IS_Est_mu (e.g.ensure it is larger than the sample mean of data)
     ## The if condition checks that selected priors satisfice the  requirements of Prior Predictive Check
     if(mu0 >= lower_bound_mu0 & mu0 <=  upper_bound_mu0 & log_tau0 >=lower_bound_tau0 & log_tau0 <= upper_bound_tau0 ){
-    
+      
       eval = exp(log_tau0) - region(mu0)
       
       estimate_mean_with_penalty = w$IS_Est_mu + penalty_term * max(0, eval)
@@ -146,7 +146,10 @@ stan_meta_analysis = stan_model(file = "Meta_analysis_RE.stan")
       
       number_samples = length(log_posterior_MCMC_sample$post[,'mu'])
       
+      ## optim function gives as outputs the priors that minimized the expected value and satisfice the requiriments 
+      ## of the Prior Predictive Check 
       argmin = optim(par = par_init, fn = calc_EV_with_penalty, method = "SANN", 
+                     #control = list(maxit = 20000, tmax = 20),
                      lower_bound_mu0 = lower_bound_mu0, upper_bound_mu0 = upper_bound_mu0, 
                      lower_bound_tau0 = lower_bound_tau0, upper_bound_tau0 = upper_bound_tau0,
                      log_posterior_MCMC_sample = log_posterior_MCMC_sample, y = y, sigma = sigma, y_int = y_int,
@@ -170,8 +173,8 @@ stan_meta_analysis = stan_model(file = "Meta_analysis_RE.stan")
                            c(iteration_number = number_of_iteration, number_samples = number_samples,  mu_est = w$IS_Est_mu, ESS_IS = w$ESS_IS, ESS_MCMC = w$ESS_MCMC, ESS_MCMC_mu = log_posterior_MCMC_sample$ESS_MCMC_mu, ESS = w$ESS, par = par_init))
       
       print(list(iteration_number = number_of_iteration, number_samples = number_samples, mu_est = w$IS_Est_mu, ESS_IS = w$ESS_IS, ESS_MCMC = w$ESS_MCMC, ESS_MCMC_mu = log_posterior_MCMC_sample$ESS_MCMC_mu, ESS = w$ESS, par = par_init))
-      
-      if(w$ESS > target_ESS  || number_of_iteration == 100){ 
+            
+      if(w$ESS > target_ESS  || number_of_iteration == 10000){ 
        break  
       }
     }

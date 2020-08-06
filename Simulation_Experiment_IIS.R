@@ -27,6 +27,7 @@ source('generate_sets_of_priors.R')
 ## Create functions
 source('Create_Functions_For_IIS.R')
 
+## IIS based on full data set with changed estimation errors
 {
 
 initial_time = proc.time()

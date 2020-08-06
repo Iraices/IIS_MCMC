@@ -64,6 +64,7 @@ all_target_sample_weight_given_a_MCMC_sample = function(low_mu0, high_mu0, low_l
 ######################################################################################################
 # Example
 L = c(length(mu_interval),length(tau_interval))
+#L = c(141,33)
 target_ESS = 5000
 
 
@@ -86,38 +87,53 @@ above.colors <- colorRampPalette(c(cols[2],cols[3]))
 zz <- pretty(zlim,50)
 cols=c(below.colors(sum(zz<=target_ESS)),above.colors(sum(zz>target_ESS)))
 
-
-png('contourplot_ESS.png')
-
-filled.contour(x = mu_interval, y = tau_interval, z = t(output2$ESS), xlab = 'mu0', ylab = 'tau0', 
+### Figure ESS
+par(mar = c(5, 5, 3, 3))
+filled.contour(x = mu_interval, y = tau_interval, z = t(output2$ESS), 
                zlim = zlim,
-               plot.title = title(main = "ESS"), 
+               plot.title = title(main = "ESS", xlab = expression(mu[0]), ylab = expression(tau[0]), cex.main = 2.25, cex.lab = 2), 
+               levels = zz, 
+               col = cols,
+               plot.axes={axis(1, cex.axis = 2); axis(2, cex.axis = 2); points(par_stan2[1], exp(par_stan2[2]))},
+               key.axes = axis(4, cex.axis = 1.5),
+               par.settings = list(axis.text=list(fontfamily = "LM Roman 10"),
+                                 par.xlab.text=list(fontfamily = "LM Roman 10"),
+                                 par.ylab.text=list(fontfamily = "LM Roman 10"),
+                                 par.main.text=list(fontfamily = "LM Roman 10"),                                                                             
+                                 par.sub.text=list(fontfamily = "LM Roman 10")
+               ))
+               
+### Figure ESS_MCMC
+par(mar = c(5, 5, 3, 3))
+filled.contour(x = mu_interval, y = tau_interval, z = t(output2$ESS_MCMC), 
+               zlim = zlim,
+               plot.title = title(main = "ESS_MCMC", xlab = expression(mu[0]), ylab = expression(tau[0]), cex.main = 2.25, cex.lab = 2), 
                levels = zz,
                col = cols,
-               plot.axes={ axis(1); axis(2); points(par_stan2[1], exp(par_stan2[2]))})
+               plot.axes={axis(1, cex.axis = 2); axis(2, cex.axis = 2); points(par_stan2[1], exp(par_stan2[2]))},
+               key.axes = axis(4, cex.axis = 1.5),
+               par.settings = list(axis.text=list(fontfamily = "LM Roman 10"),
+                                   par.xlab.text=list(fontfamily = "LM Roman 10"),
+                                   par.ylab.text=list(fontfamily = "LM Roman 10"),
+                                   par.main.text=list(fontfamily = "LM Roman 10"),                                                                             
+                                   par.sub.text=list(fontfamily = "LM Roman 10")
+               ))
 
-dev.off()
 
-
-png('contourplot_ESS_MCMC.png')
-
-filled.contour(x = mu_interval, y = tau_interval, z = t(output2$ESS_MCMC), xlab = 'mu0', ylab = 'tau0', 
+### Figure ESS_IS
+par(mar = c(5, 5, 3, 3))
+filled.contour(x = mu_interval, y = tau_interval, z = t(output2$ESS_IS),
                zlim = zlim,
-               plot.title = title(main = "ESS_MCMC"), 
+               plot.title = title(main = "ESS_IS", xlab = expression(mu[0]), ylab = expression(tau[0]), cex.main = 2.25, cex.lab = 2), 
                levels = zz,
                col = cols,
-               plot.axes={ axis(1); axis(2); points(par_stan2[1], exp(par_stan2[2]))})
+               plot.axes={axis(1, cex.axis = 2); axis(2, cex.axis = 2); points(par_stan2[1], exp(par_stan2[2]))},
+               key.axes = axis(4, cex.axis = 1.5),
+               par.settings = list(axis.text=list(fontfamily = "LM Roman 10"),
+                                   par.xlab.text=list(fontfamily = "LM Roman 10"),
+                                   par.ylab.text=list(fontfamily = "LM Roman 10"),
+                                   par.main.text=list(fontfamily = "LM Roman 10"),                                                                             
+                                   par.sub.text=list(fontfamily = "LM Roman 10")
+               ))
 
-dev.off()
 
-
-png('contourplot_ESS_IS.png')
-
-filled.contour(x = mu_interval, y = tau_interval, z = t(output2$ESS_IS), xlab = 'mu0', ylab = 'tau0', 
-               zlim = zlim,
-               plot.title = title(main = "ESS_IS"), 
-               levels = zz,
-               col = cols,
-               plot.axes={ axis(1); axis(2); points(par_stan2[1], exp(par_stan2[2]))})
-
-dev.off()

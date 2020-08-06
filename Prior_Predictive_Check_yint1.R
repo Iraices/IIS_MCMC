@@ -5,6 +5,8 @@ source('Load_biomanipulation_data.R')
 ## generate candidate priors
 
 ## typical kind of expert judgement one might have
+# y_int = c(-10, 20)
+
 y_int = c(10, 40)
 
 # threshold 
@@ -28,6 +30,7 @@ val$p = unlist(lapply(1:nrow(val),function(i){
   mean(y_gen > y_int[1] & y_gen < y_int[2])
 }))
 ## select sets of priors
+#th_1 = 0.75
 val$dichotomic <- val$p > th_1
 ## Select set of priors to use mu0 and tau0
 val_dichotomic_TRUE = filter(val, dichotomic == TRUE)
@@ -71,7 +74,6 @@ val[i,]
 
 n_iter = 10000
 
-png('CDF111.png')
 
  plot(c(-200,200),c(0,1),type='n', ylab = 'cdf', xlab = 'Response variable')
  
@@ -93,7 +95,6 @@ segments(x0 = y_int[1],  y0 = 0, y1 = 1, col='black',lwd=2)
 segments(x0 = y_int[2],  y0 = 0, y1 = 1, col='black',lwd=2) 
 segments(x0 = y_int[1], x1 = y_int[2], y0 = 1, col='black',lwd=2) 
 
-dev.off()
 
 
 #################################################################
@@ -107,7 +108,25 @@ border_values_edge_df <- border_values %>%
   filter(q>0.98) %>% 
   ungroup() 
 
-fit_model <- lm(y ~ poly(x, 2, raw = TRUE), data = border_values_edge_df)
+fit_model <- lm(y ~ poly(x, 4, raw = TRUE), data = border_values_edge_df)
+
+data_order = data.frame(x = border_values_edge_df$x, y= predict(fit_model, border_values_edge_df))
+data_order = data_order[order(data_order$x),]
+
+plot_2 = xyplot(predict(fit_model, data_order) ~ data_order$x, col = 'black', type = 'l', xlim = c(10,40), ylim = c(1,9), xlab = 'mu0', ylab = 'tau0')
+
+
+plot_1 + as.layer(plot_2)
+
+
+########################################################################################
+
+plot(x = border_values_edge_df$x, y = predict(fit_model, border_values_edge_df), col = 'black',  xlim = c(10,40), ylim = c(1,9), xlab = 'mu0', ylab = 'tau0')
+par(new = TRUE)
+plot(border_values_edge_df$x, border_values_edge_df$y, xlim = c(10,40), ylim = c(1,9), xlab = 'mu0', ylab = 'tau0')
+
+
+###################################
 
 change_output = tidy(fit_model)
  
@@ -123,19 +142,9 @@ change_output = tidy(fit_model)
  
  reg = function(x){region(x, coef =  change_output$estimate)}
  
-########################################################################
-load('setofpriorstouse1.Rdata')
-
- x = seq(range(mu0_set_prior)[1] - 1, range(mu0_set_prior)[2] + 1, 0.1)
- plot_2 = xyplot(reg(x) ~ x, col = 'black', type = 'l', xlim = c(-10,20), ylim = c(1,9), xlab = 'mu0', ylab = 'tau0')
- 
- png('levelplot_yint1.png')
- plot_1 + as.layer(plot_2)
- dev.off()
-
-
  ########################################################################
-  
+ load('setofpriorstouse1.Rdata')
+ 
  low_mu0 = mu0_set_prior[1]
  high_mu0 = mu0_set_prior[2]
  low_log_tau0 = log(tau0_set_prior[1]) 
