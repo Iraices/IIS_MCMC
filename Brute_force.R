@@ -20,12 +20,11 @@ source('generate_sets_of_priors.R')
 {
 stan_meta_analysis = stan_model(file = "Meta_analysis_RE.stan")
 
-brute_force_means = function(grid, y, sigma, n_iter = 10000){
-  posterior_mu_means = rep(0, dim(grid)[1])
-  tau_mu_means =  rep(0, dim(grid)[1])
-  tau_study_means =  rep(0, dim(grid)[1])
-  k_means =  rep(0, dim(grid)[1])
-  log_k_means =  rep(0, dim(grid)[1])
+brute_force_means <- function(grid, y, sigma, n_iter = 10000){
+  posterior_mu_means <- rep(0, dim(grid)[1])
+  tau_mu_means <-  rep(0, dim(grid)[1])
+  tau_study_means <-  rep(0, dim(grid)[1])
+  k_means <-  rep(0, dim(grid)[1])
   
    for(i in 1:dim(grid)[1]){
     model_meta_analysis = sampling(stan_meta_analysis, data = list(N=length(y), y = y, sigma = sigma, mu0 = grid$mu_interval[i], tau0 = grid$tau_interval[i]),
@@ -38,14 +37,13 @@ brute_force_means = function(grid, y, sigma, n_iter = 10000){
     tau_mu_means[i] = summary_model$summary['tau_mu','mean']
     tau_study_means[i] = summary_model$summary['tau_study','mean']
     k_means[i] = summary_model$summary['k','mean']
-    log_k_means[i] = summary_model$summary['log_k','mean']
       
     print(i)
     }
-  return(all_means = cbind(grid,  posterior_mu_means, tau_mu_means, tau_study_means, k_means, log_k_means))
+  return(all_means = cbind(grid,  posterior_mu_means, tau_mu_means, tau_study_means, k_means))
 }
 
-## Minimun and maximum mean mu values
+## Minimum and maximum mean mu values
 cal_min_max_means = function(output_data){
   
   lower_index = which.min(output_data$posterior_mu_means)
@@ -61,19 +59,17 @@ cal_min_max_means = function(output_data){
 #################################################################################################################
 ## Runs brute force for all available data (N = 75) 
 {
-initial_time_min = proc.time()
+initial_time_min_bf = proc.time()
 
 out_brute_force = brute_force_means(grid = grid, y = y, sigma = sigma, n_iter = 20000)
+
+final_time_min_bf = proc.time() - initial_time_min_bf 
 
 save(out_brute_force, file = "out_brute_force.Rdata")
 load("out_brute_force.Rdata")
 
 output = cal_min_max_means(out_brute_force)
  
-final_time_min = proc.time() - initial_time_min 
+
 }
-
-## Study the results
-
-output[,c("lower_mean","mu0_lower_mean","tau0_lower_mean")]
 

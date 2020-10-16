@@ -8,13 +8,11 @@ loadfonts()
 library(rstan)
 library(readxl)
 library(dplyr)
-library(MCMCpack)
 library(LaplacesDemon)
 library(optimx)
 library(lattice)
 library(latticeExtra)
 library(broom)
-
 
 options(mc.cores = parallel::detectCores())
 rstan_options(auto_write = TRUE)
@@ -31,6 +29,6 @@ source('Simulation_Experiment_IIS.R')
 
 source('Brute_force.R')
 
-source('Test function.R')
+source('Test_function.R')
 
 
